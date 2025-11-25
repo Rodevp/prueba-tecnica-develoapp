@@ -1,0 +1,1 @@
+BASE_URL_DB = "postgresql://postgres:admin@localhost:5432/"
