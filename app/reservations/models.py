@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, String
+from sqlalchemy import Column, Integer, String, ForeignKey, String, DateTime
 from sqlalchemy.orm import relationship
-from app.database import Base
+from app.core.database import Base
 import datetime
 
 class Reservation(Base):

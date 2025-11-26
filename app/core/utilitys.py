@@ -1,7 +1,7 @@
 import jwt
 
 from fastapi import HTTPException, Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
@@ -12,7 +12,7 @@ from app.auth.models import User
 from app.roles.models import RolePermission, UserRole, Permission
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/login")
+http_bearer = HTTPBearer()
 
 def get_db() -> Session:
     db = session_local()
@@ -40,12 +40,12 @@ def create_access_token(data: dict, expires_minutes: int = 1440):
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    token: HTTPAuthorizationCredentials = Depends(http_bearer),
     db: Session = Depends(get_db)
 ):
     """Decodifica JWT y obtiene el usuario actual."""
     try:
-        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
+        payload = jwt.decode(token.credentials, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         user_id: str = payload.get("sub")
 
         if user_id is None:
