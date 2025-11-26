@@ -8,6 +8,7 @@ from app.reservations.services import (
     list_all_reservations,
     cancel_reservation
 )
+from app.reservations.schema import ReservationCreate
 
 router = APIRouter(
     prefix="/reservations",
@@ -24,7 +25,7 @@ def get_db():
 
 @router.post("/")
 def route_create_reservation(
-    data,
+    data: ReservationCreate,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):

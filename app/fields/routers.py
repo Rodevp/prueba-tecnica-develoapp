@@ -9,6 +9,7 @@ from app.fields.services import (
     update_field,
     delete_field
 )
+from app.fields.schema import FieldCreate, FieldUpdate
 
 router = APIRouter(
     prefix="/fields",
@@ -29,7 +30,7 @@ def get_db():
     dependencies=[Depends(require_permission("fields:create"))]
 )
 def route_create_field(
-    data,
+    data: FieldCreate,
     db: Session = Depends(get_db)
 ):
     return create_field(db, data)
@@ -56,7 +57,7 @@ def route_get_field(
 )
 def route_update_field(
     field_id: int,
-    data,
+    data: FieldUpdate,
     db: Session = Depends(get_db)
 ):
     return update_field(db, field_id, data)

@@ -8,12 +8,13 @@ from app.auth.services import (
     reset_password
 )
 from app.core.utilitys import get_current_user
+from app.auth.schema import UserCreate, UserLogin, PasswordResetRequest, PasswordResetConfirm
+
 
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
 )
-
 
 def get_db():
     db = session_local()
@@ -25,7 +26,7 @@ def get_db():
 
 @router.post("/register")
 def route_register(
-    data,
+    data: UserCreate,
     db: Session = Depends(get_db)
 ):
     return register_user(db, data)
@@ -33,7 +34,7 @@ def route_register(
 
 @router.post("/login")
 def route_login(
-    data,
+    data: UserLogin,
     db: Session = Depends(get_db)
 ):
     return login_user(db, data)
@@ -48,7 +49,7 @@ def route_me(
 
 @router.post("/password/reset-request")
 def route_password_reset_request(
-    data,
+    data: PasswordResetRequest,
     db: Session = Depends(get_db)
 ):
     return request_password_reset(db, data.email)
@@ -56,7 +57,7 @@ def route_password_reset_request(
 
 @router.post("/password/reset")
 def route_reset_password(
-    data,
+    data: PasswordResetConfirm,
     db: Session = Depends(get_db)
 ):
     return reset_password(db, data.token, data.new_password)

@@ -1,0 +1,14 @@
+from pydantic import BaseModel, Field
+
+
+class FieldCreate(BaseModel):
+    name: str = Field(..., example="Cancha 1")
+    description: str | None = Field(None, example="Cancha de césped sintético")
+    price_per_hour: float = Field(..., example=50.0)
+
+
+class FieldUpdate(BaseModel):
+    name: str | None = Field(None, example="Cancha A")
+    description: str | None = Field(None, example="Renovada en 2024")
+    price_per_hour: float | None = Field(None, example=60.0)
+
