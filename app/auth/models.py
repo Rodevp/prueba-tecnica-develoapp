@@ -14,9 +14,10 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
-    roles = relationship("Role", back_populates="users")
-    reservations = relationship("Reservation", back_populates="users")
-    
+    role_id = Column(Integer, ForeignKey("roles.id"), nullable=True)
+    role = relationship("Role", back_populates="users")
+    reservations = relationship("Reservation", back_populates="user")
+
 
 class PasswordReset(Base):
     __tablename__ = "password_resets"

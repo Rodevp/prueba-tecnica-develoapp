@@ -8,7 +8,6 @@ from app.roles.services import (
     delete_role,
     create_permission,
     list_permissions,
-    assign_permission_to_role,
     assign_role_to_user,
 )
 from app.roles.schema import RoleCreate, RoleResponse
