@@ -40,13 +40,6 @@ def route_login(
     return login_user(db, data)
 
 
-@router.get("/me")
-def route_me(
-    current_user=Depends(get_current_user)
-):
-    return current_user
-
-
 @router.post("/password/reset-request")
 def route_password_reset_request(
     data: PasswordResetRequest,

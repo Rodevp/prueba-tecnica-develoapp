@@ -44,12 +44,10 @@ def request_password_reset(db: Session, email: str):
         raise HTTPException(404, "No existe un usuario con ese correo")
 
     token = str(uuid.uuid4())
-    expires = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
 
     reset = PasswordReset(
         user_id=user.id,
         token=token,
-        expires_at=expires
     )
 
     db.add(reset)
@@ -70,9 +68,6 @@ def reset_password(db: Session, token: str, new_password: str):
 
     if not reset:
         raise HTTPException(404, "Token inválido")
-
-    if reset.expires_at < datetime.datetime.utcnow():
-        raise HTTPException(400, "El token ya expiró")
 
     user = db.query(User).filter(User.id == reset.user_id).first()
     if not user:

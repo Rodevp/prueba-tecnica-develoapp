@@ -8,6 +8,7 @@ from passlib.context import CryptContext
 from app.core.constants import JWT_SECRET, JWT_ALGORITHM
 from app.core.database import session_local
 from app.auth.models import User
+from app.roles.models import Permission
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 http_bearer = HTTPBearer()
@@ -37,6 +38,15 @@ def create_access_token(data: dict, expires_minutes: int = 1440):
     return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
+def get_user_permissions(db: Session, user_id: int):
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user or not user.role:
+        return []
+
+    return [p.name for p in user.role.permissions]
+
+
 def get_current_user(
     token: HTTPAuthorizationCredentials = Depends(http_bearer),
     db: Session = Depends(get_db)
@@ -59,7 +69,7 @@ def get_current_user(
     if not user:
         raise HTTPException(404, "Usuario no encontrado")
 
-    user.permissions = [p.name for p in user.role.permissions]
+    user.permissions = get_user_permissions(db, int(user_id))
 
     return user
 
