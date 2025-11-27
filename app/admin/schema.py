@@ -5,18 +5,16 @@ class FieldStats(BaseModel):
     field: str
     total: int
 
-
 class ReservationStats(BaseModel):
-    activas: int
-    canceladas: int
+    actives: int
+    cancels: int
     total: int
-
 
 class UsersStats(BaseModel):
     total: int
 
 
 class AdminStatsResponse(BaseModel):
-    reservas_por_cancha: List[FieldStats]
-    reservas: ReservationStats
-    usuarios: UsersStats
+    reservation_per_field: List[FieldStats]
+    reservations: ReservationStats
+    users: UsersStats
