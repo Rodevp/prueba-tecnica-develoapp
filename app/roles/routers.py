@@ -6,11 +6,11 @@ from app.roles.services import (
     create_role,
     list_roles,
     delete_role,
-    create_permission,
     list_permissions,
     assign_role_to_user,
+    assign_permission_to_role
 )
-from app.roles.schema import RoleCreate
+from app.roles.schema import RoleCreate, AssingRole
 
 router = APIRouter(
     prefix="/roles",
@@ -53,15 +53,6 @@ def route_delete_role(
 ):
     return delete_role(db, role_id)
 
-@router.post(
-    "/permissions",
-    dependencies=[Depends(require_permission("permissions:create"))]
-)
-def route_create_permission(
-    data: RoleCreate,
-    db: Session = Depends(get_db)
-):
-    return create_permission(db, data.name)
 
 @router.get(
     "/permissions",
@@ -81,14 +72,14 @@ def route_assign_permission(
     data: RoleCreate,
     db: Session = Depends(get_db)
 ):
-    return assign_permission_to_role(db, role_id, data.name)
+    return assign_permission_to_role(db, role_id, data.permissions)
 
 @router.post(
     "/assign-role",
     dependencies=[Depends(require_permission("roles:assign"))]
 )
 def route_assign_role_to_user(
-    data: RoleCreate,
+    data: AssingRole,
     db: Session = Depends(get_db)
 ):
     return assign_role_to_user(db, data.user_id, data.role_id)
