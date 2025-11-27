@@ -10,7 +10,7 @@ from app.roles.services import (
     list_permissions,
     assign_role_to_user,
 )
-from app.roles.schema import RoleCreate, RoleResponse
+from app.roles.schema import RoleCreate
 
 router = APIRouter(
     prefix="/roles",

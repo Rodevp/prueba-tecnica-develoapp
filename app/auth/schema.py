@@ -5,6 +5,7 @@ class UserCreate(BaseModel):
     full_name: str = Field(..., example="Juan Pérez")
     email: EmailStr = Field(..., example="juan@mail.com")
     password: str = Field(..., min_length=6, example="123456")
+    role_name: str = Field(..., example="user | admin")
 
 
 class UserLogin(BaseModel):

@@ -3,17 +3,27 @@ from fastapi import HTTPException
 from app.auth.models import User, PasswordReset
 from app.core.utilitys import hash_password, verify_password, create_access_token
 import uuid
-import datetime
+
+def get_role_id_by_name(db: Session, role_name: str):
+    from app.roles.models import Role 
+    
+    role = db.query(Role).filter(Role.name == role_name).first()
+    if not role:
+        raise HTTPException(404, f"El rol '{role_name}' no existe en la base de datos.")
+    return role.id
 
 def register_user(db: Session, data):
     existing = db.query(User).filter(User.email == data.email).first()
     if existing:
         raise HTTPException(400, "El correo ya está registrado")
 
+    role_id = get_role_id_by_name(db, data.role_name)
+
     user = User(
         email=data.email,
         full_name=data.full_name,
-        password=hash_password(data.password)
+        password=hash_password(data.password),
+        role_id=role_id
     )
 
     db.add(user)
@@ -21,7 +31,6 @@ def register_user(db: Session, data):
     db.refresh(user)
 
     return user
-
 
 def login_user(db: Session, data):
     user = db.query(User).filter(User.email == data.email).first()
@@ -57,7 +66,6 @@ def request_password_reset(db: Session, email: str):
         "message": "Token generado",
         "token": token
     }
-
 
 def reset_password(db: Session, token: str, new_password: str):
     reset = (
