@@ -8,7 +8,6 @@ from passlib.context import CryptContext
 from app.core.constants import JWT_SECRET, JWT_ALGORITHM
 from app.core.database import session_local
 from app.auth.models import User
-from app.roles.models import Permission
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 http_bearer = HTTPBearer()
@@ -44,7 +43,7 @@ def get_user_permissions(db: Session, user_id: int):
     if not user or not user.role:
         return []
 
-    return [p.name for p in user.role.permissions]
+    return [p.permission.name for p in user.role.role_permissions]
 
 
 def get_current_user(

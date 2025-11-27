@@ -2,7 +2,8 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from app.roles.models import Role, Permission
 from app.auth.models import User
-from app.roles.models import Permission, Role
+from app.roles.models import Permission, Role, RolePermission
+from typing import List
 
 def create_role(db: Session, name: str):
     existing = db.query(Role).filter(Role.name == name).first()
@@ -64,8 +65,6 @@ def assign_role_to_user(db: Session, user_id: int, role_id: int):
 
 def assign_permission_to_role(db: Session, role_id: int, permission_names: List[str]):
 
-    print(permission_names)
-
     role = db.query(Role).filter(Role.id == role_id).first()
     
     if not role:
@@ -80,15 +79,24 @@ def assign_permission_to_role(db: Session, role_id: int, permission_names: List[
             return {"message": f"No se proporcionaron permisos para el rol {role.name}."}
         else:
              raise HTTPException(404, "No se encontraron permisos válidos con esos nombres.")
+
+    new_assignments = []
+
     for permission in permissions_to_assign:
-        permission.role_id = role_id
-        db.add(permission)
+        new_assignments.append(RolePermission(
+            role_id=role_id, 
+            permission_id=permission.id
+        ))
     
     try:
+        db.bulk_save_objects(new_assignments)
         db.commit()
-    except Exception as e:
+    except exc.IntegrityError:
         db.rollback()
-        raise HTTPException(500, detail=f"Error de base de datos al asignar permisos: {str(e)}")
+        raise HTTPException(
+            400, 
+            "Error de integridad: Uno o más permisos ya están asignados a este rol."
+        )
 
     assigned_count = len(permissions_to_assign)
     return {

@@ -11,7 +11,7 @@ class Role(Base):
     description = Column(String(255))
 
     users = relationship("User", back_populates="role")
-    permissions = relationship("Permission", back_populates="role")
+    role_permissions = relationship("RolePermission", back_populates="role")
 
 
 class Permission(Base):
@@ -20,5 +20,14 @@ class Permission(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(100), unique=True, nullable=False)
 
-    role_id = Column(Integer, ForeignKey("roles.id"), nullable=False)
-    role = relationship("Role", back_populates="permissions")
+    permission_roles = relationship("RolePermission", back_populates="permission")
+
+
+class RolePermission(Base):
+    __tablename__ = "role_permissions"
+    
+    role_id = Column(Integer, ForeignKey("roles.id"), primary_key=True)
+    permission_id = Column(Integer, ForeignKey("permissions.id"), primary_key=True)
+    
+    role = relationship("Role", back_populates="role_permissions")
+    permission = relationship("Permission", back_populates="permission_roles")
